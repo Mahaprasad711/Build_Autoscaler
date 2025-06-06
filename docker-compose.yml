@@ -1,0 +1,12 @@
+services:
+  server:
+    build: ./server
+    container_name: resnet-server
+    ports:
+      - "8001:8001"
+
+  client:
+    build: ./client
+    container_name: resnet-client
+    depends_on:
+      - server

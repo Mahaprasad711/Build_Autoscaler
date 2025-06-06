@@ -1,44 +1,19 @@
 # Build_Autoscaler
 
-## Setup Instructions
+## Clone the Project
 
-### Prerequisites
-- Python 3.11.x (recommended)
-- Git
-- Docker (for containerized deployment)
+git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
 
-### 1. Clone the Repository
+## Launch Docker
 
- run 'git clone https://github.com/yourusername/autoscaling-image-classifier.git
-cd autoscaling-image-classifier'
+Launch Docker desktop
 
-# Create virtual environment
+### Build the containers
 
-run 'python -m venv venv'
+Run the following command in the root folder:
 
-# Activate it
-# Windows:
-run '.\venv\Scripts\activate'
-# Mac/Linux:
-source venv/bin/activate
+`docker-compose up --build`
 
+The server should start and client should now try to connect and display results of image recognition.
 
-# Install Dependencies
-
-run 'pip install -r requirements.txt'
-
-# Test the Application
-Run the Server (Terminal 1)
-
-run python 'model_server.py'
-
-Test with Client (Terminal 2)
-
-run python 'client.py'
-
-
-# Common Issue
-
-After running python client.py
-500 Server Errors and server is crashing.
-
+You can also run the client container in docker desktop to get the results
