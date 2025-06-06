@@ -10,6 +10,8 @@ Launch Docker desktop
 
 ### Build the containers
 
+Run the following command in the root folder:
+
 `docker-compose up --build`
 
 The server should start and client should now try to connect and display results of image recognition.
