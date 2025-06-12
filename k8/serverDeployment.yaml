@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resnet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resnet-server
+  template:
+    metadata:
+      labels:
+        app: resnet-server
+    spec:
+      containers:
+        - name: resnet-server
+          image: resnet-server:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resnet-server-service
+spec:
+  selector:
+    app: resnet-server
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+  type: NodePort

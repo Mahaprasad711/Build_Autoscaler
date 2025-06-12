@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resnet-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resnet-client
+  template:
+    metadata:
+      labels:
+        app: resnet-client
+    spec:
+      containers:
+        - name: resnet-client
+          image: resnet-client:latest
+          imagePullPolicy: Never
+          env:
+            - name: IMAGE_PATH
+              value: "apple.jpeg"
+            - name: SERVER_URL
+              value: "http://resnet-server-service:8001/infer"

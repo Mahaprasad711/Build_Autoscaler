@@ -1,21 +1,18 @@
-# Dockerfile
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libgl1 \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libgl1 && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
-COPY . .
+# ⬇️ Copy only requirements first (for caching)
+COPY requirements.txt .
 
-# Install Python packages
+# ⬇️ Install dependencies
 RUN pip install --no-cache-dir --timeout=600 -r requirements.txt
 
-# Expose the port
+# ⬇️ Now copy the rest
+COPY . .
+
 EXPOSE 8001
 
-# Default to running server (can be overridden)
 CMD ["python", "server.py"]
