@@ -2,11 +2,18 @@
 
 ## Clone the Project
 
-git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
+>git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
 
-## Launch Docker
+## Start Minikube
 
-Launch Docker desktop
+>minikube start
+This will create a local K8s cluster inside Docker.
+## Use Minikube's Docker Daemon
+This ensures images are built inside Minikube and accessible to Kubernetes.
+
+
+>& minikube -p minikube docker-env | Invoke-Expression
+
 
 ### Build the containers
 
