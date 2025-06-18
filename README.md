@@ -25,9 +25,9 @@ Every time the code changes, it requires to be run.
 
 ## Deploy Kubernetes resources
 code:
->kubectl apply -f k8s/server-deployment.yaml
+>kubectl apply -f k8/serverDeployment.yaml
 
->kubectl apply -f k8s/client-deployment.yaml
+>kubectl apply -f k8/clientDeployment.yaml
 
 Do it one time, but **you need to run it again if changes made to Yaml files**
 

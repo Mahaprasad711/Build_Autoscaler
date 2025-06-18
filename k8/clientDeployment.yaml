@@ -20,4 +20,4 @@ spec:
             - name: IMAGE_PATH
               value: "apple.jpeg"
             - name: SERVER_URL
-              value: "http://resnet-server-service:8001/infer"
+              value: "http://dispatcher-service:9000/dispatch"

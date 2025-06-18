@@ -10,7 +10,6 @@ import time
 
 preprocessor = ResNet18_Weights.IMAGENET1K_V1.transforms()
 
-# These two lines are important, as your pods will have CPU request and CPU limit of "1" (for memory also use "1G" for both request and limit)
 torch.set_num_interop_threads(1)
 torch.set_num_threads(1)
 
