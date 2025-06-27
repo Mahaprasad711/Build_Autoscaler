@@ -2,51 +2,55 @@
 
 ## Clone the Project
 code:
->git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
+> git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
 
 ## Start Minikube
 code:
->minikube start
+> minikube start
 
 This will create a local K8s cluster inside Docker.
+
 ## Use Minikube's Docker Daemon
 This ensures images are built inside Minikube and accessible to Kubernetes.
 
 code:
->& minikube -p minikube docker-env | Invoke-Expression
+> & minikube -p minikube docker-env | Invoke-Expression
 
-## Build Docker Image
+## Build Docker Images
 code:
->docker build -t resnet-server:latest ./server
+> docker build -t resnet-server:latest ./server
 
->docker build -t resnet-client:latest ./client
+> docker build -t resnet-client:latest ./client
 
-Every time the code changes, it requires to be run.
+> docker build -t dispatcher:latest ./dispatcher
 
-## Deploy Kubernetes resources
+Every time the code changes, these commands must be re-run to rebuild the images inside Minikube.
+
+## Deploy Kubernetes Resources
 code:
->kubectl apply -f k8/serverDeployment.yaml
+> kubectl apply -f k8/serverDeployment.yaml
 
->kubectl apply -f k8/clientDeployment.yaml
+> kubectl apply -f k8/clientDeployment.yaml
 
-Do it one time, but **you need to run it again if changes made to Yaml files**
+> kubectl apply -f k8/dispatcherDeployment.yaml
 
-## View logs from the client
+Apply these once initially, and again whenever you make changes to the YAML files.
 
+## Expose Dispatcher Service
+code:
+> minikube service dispatcher-service --url
 
->kubectl logs -l app=resnet-client
+This command will output a URL (e.g., `http://127.0.0.1:56006`). Use this in the `load_tester` script as the endpoint.
 
-Expected output:
+## Run the Load Tester
+Navigate to the load tester directory:
+> cd load_tester
 
->Waiting for server to start on port 8001...
+Then run:
+> python resnet_test.py
 
->Server is up - starting client
-['apple', 'Granny Smith', 'fruit', 'red wine', 'pomegranate'] 0.243
+This will send image classification requests to the dispatcher and simulate variable client load.
 
-## Tested Environment
-
-- Docker Desktop (v24+)
-
-- Minikube v1.33+
-
-- kubectl v1.30+
+You can customize the workload pattern in `resnet_test.py`:
+```python
+workload = [2, 3, 5, 5, 8, 8, 10]  # Each value represents the number of requests per second

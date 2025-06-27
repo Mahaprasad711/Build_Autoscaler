@@ -39,7 +39,9 @@ app = web.Application()
 
 async def infer_handler(request):
     req = await request.json()
-    return web.json_response(infer(req))
+    preds = infer(req)
+    return web.json_response({"predictions": preds})
+
     
 
 app.add_routes(
