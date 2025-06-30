@@ -1,56 +1,144 @@
-# Build_Autoscaler
+# Build Autoscaler
 
 ## Clone the Project
-code:
-> git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
+
+```
+git clone https://github.com/Mahaprasad711/Build_Autoscaler.git
+```
 
 ## Start Minikube
-code:
-> minikube start
 
-This will create a local K8s cluster inside Docker.
+```
+minikube start --cpus=4 --memory=8g
+```
+
+- Adjust CPUs and memory for your hardware (4 CPUs/8GB RAM recommended).
 
 ## Use Minikube's Docker Daemon
+
 This ensures images are built inside Minikube and accessible to Kubernetes.
 
-code:
-> & minikube -p minikube docker-env | Invoke-Expression
+```
+& minikube -p minikube docker-env | Invoke-Expression
+```
 
 ## Build Docker Images
-code:
-> docker build -t resnet-server:latest ./server
 
-> docker build -t resnet-client:latest ./client
+```
+docker build -t resnet-server:latest ./server
+```
 
-> docker build -t dispatcher:latest ./dispatcher
-
-Every time the code changes, these commands must be re-run to rebuild the images inside Minikube.
+*Only **`resnet-server`** is needed for core functionality.*
 
 ## Deploy Kubernetes Resources
-code:
-> kubectl apply -f k8/serverDeployment.yaml
 
-> kubectl apply -f k8/clientDeployment.yaml
+```
+kubectl apply -f k8/serverDeployment.yaml
+```
 
-> kubectl apply -f k8/dispatcherDeployment.yaml
+*Wait for pods to reach **`Running`** state:*
 
-Apply these once initially, and again whenever you make changes to the YAML files.
+```
+kubectl get pods
+```
 
-## Expose Dispatcher Service
-code:
-> minikube service dispatcher-service --url
+## Deploy Monitoring Stack (Prometheus & Grafana)
 
-This command will output a URL (e.g., `http://127.0.0.1:54834`). Use this in the `load_tester` script as the endpoint.
+If not already installed:
+
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus -n monitoring --create-namespace
+helm install grafana grafana/grafana -n monitoring
+```
+
+*Wait for all monitoring pods to show **`Running`** in*
+
+```
+kubectl get pods -n monitoring
+```
+
+## Expose Monitoring UIs
+
+You can use the `port-forward.bat` script for convenience. Double-click to open all required ports in separate terminals automatically.
+
+**Manual alternative (if needed):**
+
+```
+kubectl -n monitoring port-forward svc/grafana 3000:80
+kubectl -n monitoring port-forward deploy/prometheus-server 9090
+kubectl port-forward svc/resnet-server-service 8001:8001
+```
+
+## Access Dashboards and Metrics
+
+- Grafana: [http://localhost:3000](http://localhost:3000)
+  - Default user: `admin` (password from k8s secret; see below)
+- Prometheus: [http://localhost:9090](http://localhost:9090)
+- ResNet Inference API: [http://localhost:8001/infer](http://localhost:8001/infer)
+
+## Get Grafana Admin Password
+
+```
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+
+*Or, on Windows PowerShell:*
+
+```
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}"
+# Then decode manually using online tool or PowerShell base64 decoder.
+```
 
 ## Run the Load Tester
-Navigate to the load tester directory:
-> cd load_tester
 
-Then run:
-> python resnet_test.py
+Navigate to the `client` directory:
 
-This will send image classification requests to the dispatcher and simulate variable client load.
+```
+cd client
+python resnet_test.py
+```
 
-You can customize the workload pattern in `resnet_test.py`:
-```python
-workload = [2, 3, 5, 5, 8, 8, 10]  # Each value represents the number of requests per second
+- This will send image classification requests to the server.
+- The workload pattern can be set in `workload.txt`.
+
+## Run the Autoscaler
+
+In the project root, run:
+
+```
+python autoscaler.py
+```
+
+- Autoscaler will monitor latency and scale pods up/down accordingly (via Prometheus and `kubectl`).
+
+## To Use HPA for Comparison
+
+Enable metrics server (if not already):
+
+```
+minikube addons enable metrics-server
+```
+
+Create HPA for `resnet-server`:
+
+```
+kubectl autoscale deployment resnet-server --cpu-percent=50 --min=1 --max=4
+```
+
+Monitor with:
+
+```
+kubectl get hpa
+kubectl get pods -l app=resnet-server
+```
+
+## Collecting Results
+
+- Open Grafana at [http://localhost:3000](http://localhost:3000)
+- View/export graphs (latency, pod count, etc) for both autoscaler and HPA runs.
+- For best results, screenshot panels or use Grafana's export features.
+
+
