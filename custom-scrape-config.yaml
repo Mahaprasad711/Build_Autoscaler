@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resnet-scrape-config
+  namespace: monitoring
+data:
+  additional-scrape-configs.yaml: |
+    - job_name: 'resnet-server'
+      static_configs:
+        - targets: ['resnet-server-service.default.svc.cluster.local:8002']

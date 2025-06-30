@@ -17,17 +17,26 @@ spec:
           image: resnet-server:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8001
+            - containerPort: 8001        # inference API
+            - containerPort: 8002        # Prometheus metrics
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: resnet-server-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8002"
 spec:
   selector:
     app: resnet-server
   ports:
-    - protocol: TCP
+    - name: http           # inference
+      protocol: TCP
       port: 8001
       targetPort: 8001
+    - name: metrics        # Prometheus scrape
+      protocol: TCP
+      port: 8002
+      targetPort: 8002
   type: NodePort

@@ -40,7 +40,7 @@ Apply these once initially, and again whenever you make changes to the YAML file
 code:
 > minikube service dispatcher-service --url
 
-This command will output a URL (e.g., `http://127.0.0.1:56006`). Use this in the `load_tester` script as the endpoint.
+This command will output a URL (e.g., `http://127.0.0.1:54834`). Use this in the `load_tester` script as the endpoint.
 
 ## Run the Load Tester
 Navigate to the load tester directory:

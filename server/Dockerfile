@@ -1,18 +1,13 @@
 FROM python:3.12-slim
 
+RUN apt-get update && apt-get install -y libgl1 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y libgl1 && rm -rf /var/lib/apt/lists/*
-
-# ⬇️ Copy only requirements first (for caching)
+COPY server.py .
 COPY requirements.txt .
 
-# ⬇️ Install dependencies
-RUN pip install --no-cache-dir --timeout=600 -r requirements.txt
+RUN pip install --no-cache-dir --timeout 600 -r requirements.txt
 
-# ⬇️ Now copy the rest
-COPY . .
-
-EXPOSE 8001
-
+EXPOSE 8001 8002
 CMD ["python", "server.py"]

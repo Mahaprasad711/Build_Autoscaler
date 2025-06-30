@@ -1,0 +1,8 @@
+# resnet-values.yaml
+server:
+  extraScrapeConfigs: |
+    - job_name: resnet-server
+      metrics_path: /metrics
+      static_configs:
+        - targets:
+          - resnet-server-service.default.svc.cluster.local:8002
