@@ -1,6 +1,6 @@
 # Build Autoscaler
 
-##This project demonstrates how to automatically scale a ResNet18 image classification service running on Kubernetes. We use custom monitoring and autoscaling so the system can react to real-time performance, keeping response times low—even as the load changes. You’ll find everything needed to build, deploy, monitor, and run both a custom latency-based autoscaler and the standard Kubernetes HPA, along with clear steps for reproducing our results and experiments.
+## This project demonstrates how to automatically scale a ResNet18 image classification service running on Kubernetes. We use custom monitoring and autoscaling so the system can react to real-time performance, keeping response times low—even as the load changes. You’ll find everything needed to build, deploy, monitor, and run both a custom latency-based autoscaler and the standard Kubernetes HPA, along with clear steps for reproducing our results and experiments.
 ## Clone the Project
 
 ```
